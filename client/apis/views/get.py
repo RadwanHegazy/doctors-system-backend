@@ -5,12 +5,10 @@ from doctor.apis.serializers import Doctor, DoctorSerializer, Department
 @decorators.api_view(["GET"])
 def GetDocsForClient (request) :
     try :
-        # add filteration and search
 
         departmanet = request.GET.get('department',None)
         search = request.GET.get('search',None)
 
-        print(search, departmanet)
         doctors = Doctor.objects.all()
 
         if departmanet is not None : 
@@ -48,7 +46,7 @@ def GetDoctor (request, doc_id) :
             },status=status.HTTP_404_NOT_FOUND)
          
         serializer = DoctorSerializer(doctor)
-
+        serializer.has_counter = True
         return Response(serializer.data,status=status.HTTP_200_OK)
     except Exception as error : 
         return Response({
