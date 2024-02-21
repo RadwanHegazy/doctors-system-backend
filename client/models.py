@@ -27,5 +27,17 @@ class Ticket (models.Model) :
     created_at = models.DateTimeField(auto_now_add=True)
     checked = models.BooleanField(default=False)
 
+    def get_client_for_doc (self) : 
+        client = self.client
+        data = {
+            'id' : str(client.id),
+            'picture' : client.picture.url,
+            'full_name' : client.full_name,
+            'description' : client.description,
+            'age' : client.age,
+            'gender' : client.gender,
+        }
+        return data
+            
     def __str__(self) : 
         return f"{self.doctor.full_name} | {self.client.full_name}"

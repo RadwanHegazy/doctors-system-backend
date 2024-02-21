@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from client.models import Ticket
+from client.apis.serializer import ClientSerializer
 from doctor.models import Doctor, Department
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -9,6 +11,7 @@ class DepartmentSerializer (serializers.ModelSerializer) :
 
 class DoctorSerializer (serializers.ModelSerializer) : 
     has_counter = False
+    has_clients = False
     department = DepartmentSerializer()    
 
     class Meta:
@@ -18,9 +21,16 @@ class DoctorSerializer (serializers.ModelSerializer) :
     def to_representation(self, instance):
         data = super().to_representation(instance)
         
+
+            
         if self.has_counter :
-            # return client analytics with data
-            pass
+            ticket = Ticket.objects.filter(doctor=instance)
+            data['checked_clients'] = ticket.filter(checked=True).count()
+            data['unchecked_clients'] = ticket.filter(checked=False).count()
+        
+        if self.has_clients :
+            clients = [i.get_client_for_doc() for i in Ticket.objects.filter(doctor=instance,checked=False)]
+            data['clients'] = clients
 
         return data
 
