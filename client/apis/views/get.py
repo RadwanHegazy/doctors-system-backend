@@ -7,20 +7,15 @@ def GetDocsForClient (request) :
     try :
 
         departmanet = request.GET.get('department',None)
+        departmanet = None if departmanet == "ALL" else departmanet
+
         search = request.GET.get('search',None)
 
         doctors = Doctor.objects.all()
 
         if departmanet is not None : 
-            
-            try : 
-                dep_model = Department.objects.get(name=departmanet)
-            except Department.DoesNotExist:
-                return Response({
-                    'message' : "department not found"
-                },status=status.HTTP_400_BAD_REQUEST) 
 
-            doctors = doctors.filter(department=dep_model)
+            doctors = doctors.filter(department__name__icontains=departmanet)
 
         if search is not None : 
             doctors = doctors.filter(full_name__icontains=search)
